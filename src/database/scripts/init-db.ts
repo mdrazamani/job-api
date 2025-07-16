@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-
 import { Client } from 'pg';
-import { execSync } from 'child_process';
+import { execSync, execSync as exec } from 'child_process';
 import * as path from 'path';
+import * as fs from 'fs';
 import { AppConfigService } from '@/config/config.service';
 import { AppConfigModule } from '@/config/config.module';
 import { Logger } from '@/common/logging/logger';
@@ -36,10 +36,26 @@ async function initDatabase() {
 
         await checkClient.end();
 
-        const dataSourcePath = path.resolve(process.cwd(), 'src', 'database', 'data-source.ts');
-        logger.log(`🛠 Running migrations using: ${dataSourcePath}`);
+        const dataSourcePath = path.resolve('src', 'database', 'data-source.ts');
+        const migrationsDir = path.resolve('src', 'database', 'migrations');
 
-        execSync(`npx typeorm migration:run --dataSource ${dataSourcePath}`, {
+        const migrationFiles = fs.existsSync(migrationsDir) ? fs.readdirSync(migrationsDir).filter((file) => file.endsWith('.ts')) : [];
+
+        if (migrationFiles.length === 0) {
+            logger.log(`📁 No migrations found. Generating initial migration...`);
+            execSync(`npm run typeorm -- migration:generate src/database/migrations/InitJobOffers --dataSource ${dataSourcePath}`, {
+                stdio: 'inherit',
+                env: {
+                    ...process.env,
+                    PGPASSWORD: config.dbPassword
+                }
+            });
+        } else {
+            logger.log(`📁 Found ${migrationFiles.length} migration(s).`);
+        }
+
+        logger.log(`🚀 Running migrations...`);
+        execSync(`npm run typeorm -- migration:run --dataSource ${dataSourcePath}`, {
             stdio: 'inherit',
             env: {
                 ...process.env,

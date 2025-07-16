@@ -140,9 +140,9 @@ npm run test:e2e
 **GET /api/job-offers**
 
 - Query params:
-  - `title`, `location`
-  - `minSalary`, `maxSalary`
-  - `page`, `limit`
+    - `title`, `location`
+    - `minSalary`, `maxSalary`
+    - `page`, `limit`
 
 Example:
 
@@ -188,4 +188,4 @@ src/
 
 ## 👤 Author
 
-**Mohammadreza Zamani**
+**MohammadReza Zamani**

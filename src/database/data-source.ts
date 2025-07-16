@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
-import { JobOffer } from '@/app/jobOffer/entities/job-offer.entity';
+import { JobOffer } from '../app/jobOffer/entities/job-offer.entity';
 
 dotenv.config();
 
